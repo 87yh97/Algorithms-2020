@@ -4,14 +4,12 @@ import kotlin.NotImplementedError;
 import lesson1.Sorts;
 
 import java.io.BufferedWriter;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -45,49 +43,29 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    //Ресурсоемкость: (X*N*2 + K) - памяти требуется для отдельной сортировки только AM или PM значений(0<X<1),
-    // тогда как для оставшейся части требуется ((1-X)*N*2 + K). Из-за формата входных данных
-    // так как в памяти одновременно хранятся списки временных значений и их же массивы.
+    // Ресурсоемкость: (X*N*2 + K) - памяти требуется для отдельной сортировки только AM или PM значений(0<X<1),
+    // тогда как для оставшейся части требуется ((1-X)*N*2 + K). Алгоритм же хранит N изначальных значений в двух массивах am[] и pm[]
+    // в одном экземпляре каждый. Также в алгоритме используются отдельные массивы для сохранения временных значений
+    // в 12 am/pm часов, которые могут занимать от 0 до (N-1) значений.
+    // Следовательно ресурсоемкость в лучшем случае равна O(X*N*2 + K + (1-X)*N*2 + K + N) = O(3N + 2K), а в худшем
+    // O(X*N*2 + K + (1-X)*N*2 + K + N + 2*(N-1)) = O(3N + 2K + 2N - 2) = O(5N + 2K -2).
+    // Значит в общем случае ресурсоемкость равна O(N + K)
+    // Трудоемкость: Сортировка подсчетом обладает трудоемкостью O(N + K), все остальные действия алгоритма
+    // по преобразованию входных данных и их обработке также работают за O(N)
+    // Значит трудоемкость алгоритма равна O(N + K)
     //
     static public void sortTimes(String inputName, String outputName) throws IOException {
 
         BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
 
-        /*ArrayList<Integer> amList = new ArrayList<>();
-        ArrayList<Integer> pmList = new ArrayList<>();
-        String inp;
 
-        while ((inp = file.readLine()) != null) {                                   //O(n)
-            if (!inp.matches("(\\d\\d:\\d\\d:\\d\\d)\\s(AM|PM)")) {
-                throw new IllegalArgumentException();
-            }
-            String[] inpSplit = inp.split(":|\\s");
-            //System.out.println(inp);
-            if (inp.matches(".*(AM)")) {
-                amList.add(Integer.parseInt(inpSplit[0]) * 3600 +
-                        Integer.parseInt(inpSplit[1]) * 60 +
-                        Integer.parseInt(inpSplit[2]));
-            } else {
-                pmList.add(Integer.parseInt(inpSplit[0]) * 3600 +
-                        Integer.parseInt(inpSplit[1]) * 60 +
-                        Integer.parseInt(inpSplit[2]));
-            }
-        }
-
-        file.close();
-
-        int[] am = Sorts.countingSort(amList.stream().mapToInt(Integer::intValue).toArray(), 46800);
-        int[] pm = Sorts.countingSort(pmList.stream().mapToInt(Integer::intValue).toArray(), 46800);
-
-        amList = null;
-        pmList = null;
-
-         */
         String inp;
         int amLines = 0;
         int pmLines = 0;
-        while ((inp = file.readLine()) != null) {                                   //O(n)
-            if (!inp.matches("(\\d\\d:\\d\\d:\\d\\d)\\s(AM|PM)")) {
+        boolean isEmpty= true;
+        while ((inp = file.readLine()) != null) {
+            isEmpty = false;
+            if (!inp.matches("(((0[0-9]|1[0-2]):([0-5][0-9]):([0-5][0-9]))\\s(AM|PM))")) {
                 throw new IllegalArgumentException();
             }
             if (inp.matches(".*(AM)")) {
@@ -96,6 +74,9 @@ public class JavaTasks {
                 pmLines++;
             }
         }
+
+        if (isEmpty) throw new IllegalArgumentException();
+
         file.close();
 
         file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
@@ -147,9 +128,6 @@ public class JavaTasks {
 
             System.arraycopy(am, amInd, amSwap, 0, am.length - amInd);
 
-//            for (int i = am.length - 1; i >= am.length - amInd; i--) {
-//                am[i] = am[i - (am.length - amInd)];
-//            }
             System.arraycopy(am, 0, am, am.length - amInd, amInd);
 
             System.arraycopy(amSwap, 0, am, 0, am.length - amInd);
@@ -159,9 +137,6 @@ public class JavaTasks {
 
             System.arraycopy(pm, pmInd, pmSwap, 0, pm.length - pmInd);
 
-//            for (int i = pm.length - 1; i >= pm.length - pmInd; i--) {
-//                pm[i] = pm[i - (pm.length - pmInd)];
-//            }
             System.arraycopy(pm, 0, pm, pm.length - pmInd, pmInd);
 
             System.arraycopy(pmSwap, 0, pm, 0, pm.length - pmInd);
@@ -236,8 +211,78 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortAddresses(String inputName, String outputName) {
-        throw new NotImplementedError();
+    //
+    //Ресурсоемкость: Для хранения данных используется TreeMap с парами (Название улицы - TreeMap с парами (Номер дома - [Множество Имен]))
+    //Так как каждое имя относится лишь к одному дому, который относится лишь к одной улице, то имена не повторяются, а значит
+    //для их хранения используется N ячеек в сумме со всех множеств. В худшем случае, когда каждый человек проживает на уникальной
+    //улице, для хранения его имени требуется также хранение адреса. Значит если средний вес комбинации (Улица + Дом + Имя) Х байт, то
+    //ресурсоемкость составит O(N * X) = O(N), так как ресурсоемкость TreeMap и TreeSet составляет O(N). В лучших же случаях, когда несколько людей
+    //будут жить в одном доме, для хранения каждого имени из множества "соседей" средний вес комбинации (Улица + Дом + Имя) будет
+    // меньше максимально возможного Х, так как не нужно будет повторно хранить название улицы и номер дома. Значит в лучших случаях
+    //ресурсоемкость будет равна O(N * K) = O(N), K < X.
+    //Ресурсоемкость: O(N)
+    //Трудоемкость: Помещение элементов в первый TreeMap занимает O(log N), помещение во второй TreeMap также занимает O(log N),
+    // помещение в TreeSet занимает в худшем случае O(N), а в среднем O(1).
+
+    static public void sortAddresses(String inputName, String outputName) throws IOException {
+        BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
+
+        String inp;
+        TreeMap<String, TreeMap<Integer, TreeSet<String>>> entries = new TreeMap<>();
+
+        boolean isEmpty = true;
+        while ((inp = file.readLine()) != null) {                               //O(N * (2 * log(N) + 1)) = O(N * log(N) + N/2) - worst, все дома уникальны
+            isEmpty = false;                                                    //O(N * (log(K) + log(S) + 1)) = O(N * log(K * S) + N) - average, K,S - количество уникальных улиц и домов
+            if (!inp.matches("(\\S*)\\s(\\S*)\\s-\\s(\\S*)\\s(\\d+)")) {
+                throw new IllegalArgumentException();
+            }
+
+                String[] inpSplit = inp.split("(\\s-\\s)|(\\s(?=\\d+(\\n|$)))"); // [Селезнев Лили][Прудковский][12]
+
+            String name = inpSplit[0];
+            String streetName = inpSplit[1];
+            Integer streetNumber = Integer.valueOf(inpSplit[2]);
+
+            if (entries.containsKey(streetName)) {
+                if (entries.get(streetName).containsKey(streetNumber)) entries.get(streetName).get(streetNumber).add(name); //O(2 * log(N) + 1) - worst; O(2*log(1) + 1) - average
+                else {                                          //O(2 * log(N) + 1) - worst; O(log(K) + log(S) + 1) - average K,S - количество уникальных улиц и домов
+                    TreeSet<String> tempSet = new TreeSet<>();  
+                    tempSet.add(name);      
+                    entries.get(streetName).put(streetNumber, tempSet);
+                }
+            } else {                                            //O(2 * log(N) + 1) - worst; O(log(K) + log(S) + 1) - average K,S - количество уникальных улиц и домов
+                TreeSet<String> tempSet = new TreeSet<>();
+                tempSet.add(name);
+                TreeMap<Integer, TreeSet<String>> tempMap = new TreeMap<>();
+                tempMap.put(streetNumber, tempSet);
+                entries.put(streetName, tempMap);
+            }
+        }
+        if (isEmpty) throw new IllegalArgumentException();
+
+        file.close();
+
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
+
+        for (Map.Entry<String, TreeMap<Integer, TreeSet<String>>> street : entries.entrySet()) {    //O(N * log(N)) - worst, если все улицы уникальны
+                                                                                                    //O(K * log(K)) - average, K - кол-во уникальных улиц
+            for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {     //O(N * log(N) + N) - worst, если все дома уникальны
+                                                                                                    //O(S * log(S) + L) - average, S - кол-во уникальных домов
+                out.write(street.getKey() + " " + building.getKey() + " - ");                  
+                TreeSet<String> names = building.getValue();                                   
+                out.write(names.first());
+                if (names.size() > 1) {
+                    boolean toWriteCommas = false;
+                    for (String name : names) {                             //N * O(1) = O(N) - worst, в случае если всего одна улица и один дом
+                        if (toWriteCommas) out.write(", " + name);     //L * O(1) = O(L) - average, где L - среднее кол-во людей в одном доме
+                        else toWriteCommas = true;
+                    }
+                }
+                out.newLine();
+            }
+        }
+
+        out.close();
     }
 
     /**
@@ -270,8 +315,43 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
+
+        String inp;
+        int entriesNum = 0;
+        boolean isEmpty = true;
+        while ((inp = file.readLine()) != null) {
+            //isEmpty = false;
+//            if (!inp.matches("(-((27[0-3]\\.[0-9])|(2[0-6][0-9]\\.[0-9])|(1?[0-9]?[0-9]\\.[0-9])))|((500\\.0)|([0-4]?[0-9]?[0-9]\\.[0-9]))")) {
+//                throw new IllegalArgumentException();
+//            }
+            entriesNum++;
+        }
+       // if (isEmpty) throw new IllegalArgumentException();
+        file.close();
+
+        file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
+
+        int[] entries = new int[entriesNum];
+        entriesNum = 0;
+        while ((inp = file.readLine()) != null) {
+            entries[entriesNum] = ((int) (Double.parseDouble(inp) * 10)) + 2730;
+            entriesNum++;
+        }
+
+        file.close();
+
+        entries = Sorts.countingSort(entries, 7730);
+
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
+
+        for (int i = 0; i < entriesNum; i++) {
+            out.write(String.valueOf((entries[i] - 2730) / 10.0));
+            out.newLine();
+        }
+        System.out.println("!!!!!!!!!!!!!!SIZE: " + entries.length);
+        out.close();
     }
 
     /**

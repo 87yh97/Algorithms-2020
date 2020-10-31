@@ -101,8 +101,60 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        if (!contains(o)) return false;
+
+        @SuppressWarnings("unchecked")
+        T t = (T) o;
+
+        Node<T> node = find(t);
+        Node<T> parent = root;
+        if (parent != node) {
+
+            while (parent.left != node && parent.right != node) {
+                if (parent.value.compareTo(t) > 0 /*&& parent.left != null*/) parent = parent.left;
+                else if (parent.value.compareTo(t) < 0 /*&& parent.right != null*/) parent = parent.right;
+                System.out.println("1");
+            }
+        }
+
+        if (node.right != null) {
+
+            Node<T> current = node.right;
+            if (current.left != null) {
+                while (current.left != null) {
+                    current = current.left;
+                    System.out.println("2");
+                }
+                Node<T> newNode = new Node<T>(current.value);
+                current = null;
+                newNode.left = node.left;
+                newNode.right = node.right;
+
+                replace(parent, node, newNode);
+
+            } else {
+                current.left = node.left;
+                replace(parent, node, current);
+            }
+
+        } else if (node.left != null) {
+            replace(parent, node, node.left);
+        } else {
+            replace(parent, node, null);
+        }
+
+        size--;
+        return true;
+    }
+
+    private void replace(Node<T> parent, Node<T> node, Node<T> newValue) {
+        if (parent == node) {
+            //then it is root
+            root = newValue;
+        } else {
+            if (parent.left == node) parent.left = newValue;
+            else parent.right = newValue;
+        }
     }
 
     @Nullable
