@@ -104,32 +104,32 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
-            sortAddresses("input/addr_in4.txt", "temp.txt")
+            sortAddresses("input/addr_in4.txt", "temp.txt") //Custom
             assertFileContent("temp.txt", File("input/addr_out4.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }
         try {
-            sortAddresses("input/addr_in5.txt", "temp.txt")
+            sortAddresses("input/addr_in5.txt", "temp.txt") //Custom
             assertFileContent("temp.txt", File("input/addr_out5.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }
         try {
-            sortAddresses("input/addr_in6.txt", "temp.txt")
+            sortAddresses("input/addr_in6.txt", "temp.txt") //Custom
             assertFileContent("temp.txt", File("input/addr_out6.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }
         try {
-            assertThrows(IllegalArgumentException::class.java) {
+            assertThrows(IllegalArgumentException::class.java) { //Custom
                 sortAddresses("input/addr_in7.txt", "temp.txt")
             }
         } finally {
             File("temp.txt").delete()
         }
         try {
-            assertThrows(IllegalArgumentException::class.java) {
+            assertThrows(IllegalArgumentException::class.java) { //Custom
                 sortAddresses("input/addr_in8.txt", "temp.txt")
             }
         } finally {
@@ -178,6 +178,18 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                     121.3
                 """.trimIndent()
             )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt") //Custom
+            assertFileContent("temp.txt", File("input/temp_out2.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in3.txt", "temp.txt") //Custom empty
+            assertFileContent("temp.txt", File("input/temp_out3.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }

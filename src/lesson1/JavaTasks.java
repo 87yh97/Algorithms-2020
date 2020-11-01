@@ -221,8 +221,9 @@ public class JavaTasks {
     // меньше максимально возможного Х, так как не нужно будет повторно хранить название улицы и номер дома. Значит в лучших случаях
     //ресурсоемкость будет равна O(N * K) = O(N), K < X.
     //Ресурсоемкость: O(N)
-    //Трудоемкость: Помещение элементов в первый TreeMap занимает O(log N), помещение во второй TreeMap также занимает O(log N),
-    // помещение в TreeSet занимает в худшем случае O(N), а в среднем O(1).
+    //Трудоемкость: Пусть K - количество улиц, S - среднее количество домов на каждой улице, P - среднее количество жителей в каждом доме.
+    //Тогда средняя трудоемкость заполнения структур данных будет равна N(log(K/2) + log(S/2) + log(P/2)).
+    //Трудоемкость обработки и вывода: N(log(K) + log(S) + log(P)). В краевых случаях трудоемкость N * log(N).
 
     static public void sortAddresses(String inputName, String outputName) throws IOException {
         BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
@@ -231,8 +232,8 @@ public class JavaTasks {
         TreeMap<String, TreeMap<Integer, TreeSet<String>>> entries = new TreeMap<>();
 
         boolean isEmpty = true;
-        while ((inp = file.readLine()) != null) {                               //O(N * (2 * log(N) + 1)) = O(N * log(N) + N/2) - worst, все дома уникальны
-            isEmpty = false;                                                    //O(N * (log(K) + log(S) + 1)) = O(N * log(K * S) + N) - average, K,S - количество уникальных улиц и домов
+        while ((inp = file.readLine()) != null) {
+            isEmpty = false;
             if (!inp.matches("(\\S*)\\s(\\S*)\\s-\\s(\\S*)\\s(\\d+)")) {
                 throw new IllegalArgumentException();
             }
@@ -244,13 +245,13 @@ public class JavaTasks {
             Integer streetNumber = Integer.valueOf(inpSplit[2]);
 
             if (entries.containsKey(streetName)) {
-                if (entries.get(streetName).containsKey(streetNumber)) entries.get(streetName).get(streetNumber).add(name); //O(2 * log(N) + 1) - worst; O(2*log(1) + 1) - average
-                else {                                          //O(2 * log(N) + 1) - worst; O(log(K) + log(S) + 1) - average K,S - количество уникальных улиц и домов
+                if (entries.get(streetName).containsKey(streetNumber)) entries.get(streetName).get(streetNumber).add(name);
+                else {
                     TreeSet<String> tempSet = new TreeSet<>();  
                     tempSet.add(name);      
                     entries.get(streetName).put(streetNumber, tempSet);
                 }
-            } else {                                            //O(2 * log(N) + 1) - worst; O(log(K) + log(S) + 1) - average K,S - количество уникальных улиц и домов
+            } else {
                 TreeSet<String> tempSet = new TreeSet<>();
                 tempSet.add(name);
                 TreeMap<Integer, TreeSet<String>> tempMap = new TreeMap<>();
@@ -264,17 +265,17 @@ public class JavaTasks {
 
         BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
 
-        for (Map.Entry<String, TreeMap<Integer, TreeSet<String>>> street : entries.entrySet()) {    //O(N * log(N)) - worst, если все улицы уникальны
-                                                                                                    //O(K * log(K)) - average, K - кол-во уникальных улиц
-            for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {     //O(N * log(N) + N) - worst, если все дома уникальны
-                                                                                                    //O(S * log(S) + L) - average, S - кол-во уникальных домов
+        for (Map.Entry<String, TreeMap<Integer, TreeSet<String>>> street : entries.entrySet()) {
+
+            for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {
+
                 out.write(street.getKey() + " " + building.getKey() + " - ");                  
                 TreeSet<String> names = building.getValue();                                   
                 out.write(names.first());
                 if (names.size() > 1) {
                     boolean toWriteCommas = false;
-                    for (String name : names) {                             //N * O(1) = O(N) - worst, в случае если всего одна улица и один дом
-                        if (toWriteCommas) out.write(", " + name);     //L * O(1) = O(L) - average, где L - среднее кол-во людей в одном доме
+                    for (String name : names) {
+                        if (toWriteCommas) out.write(", " + name);
                         else toWriteCommas = true;
                     }
                 }
@@ -315,12 +316,13 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
+    //Трудоемкость: O(N + K) - Обработка данных - O(N), сортировка - O(N + K)
+    //Ресурсоемкость: O(N)
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
         BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
 
         String inp;
         int entriesNum = 0;
-        boolean isEmpty = true;
         while ((inp = file.readLine()) != null) {
             entriesNum++;
         }
