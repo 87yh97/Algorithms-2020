@@ -134,7 +134,7 @@ abstract class AbstractBinarySearchTreeTest {
                 binarySet.remove(toRemove),
                 "An element was supposedly not removed from the tree when it should have been."
             )
-            println("Actual set: $binarySet"); //Custom
+            println("Actual set: $binarySet") //Custom
             assertTrue(
                 toRemove !in binarySet,
                 "The tree contains a supposedly removed element."
@@ -168,6 +168,7 @@ abstract class AbstractBinarySearchTreeTest {
                 )
             }
 
+
             println("All clear!")
         }
     }
@@ -187,6 +188,12 @@ abstract class AbstractBinarySearchTreeTest {
                 binarySet.iterator().hasNext(),
                 "Iterator of an empty tree should not have any next elements."
             )
+            assertFailsWith<NoSuchElementException>( //Custom
+                "Exception for iteration over an empty tree was not thrown"
+            ) {
+                val iterator = binarySet.iterator()
+                iterator.next()
+            }
             for (element in controlSet) {
                 binarySet += element
             }
@@ -278,6 +285,15 @@ abstract class AbstractBinarySearchTreeTest {
                     "The tree has the element $element that is not in control set."
                 )
             }
+            val iter = binarySet.iterator()
+            while (iter.hasNext()) {
+                iter.next()
+                iter.remove()
+            }
+            assertTrue( //Custom
+                binarySet.size == 0,
+                "Some element was not deleted with iterator"
+            )
             println("All clear!")
         }
     }
