@@ -62,7 +62,7 @@ public class JavaTasks {
         String inp;
         int amLines = 0;
         int pmLines = 0;
-        boolean isEmpty= true;
+        boolean isEmpty = true;
         while ((inp = file.readLine()) != null) {
             isEmpty = false;
             if (!inp.matches("(((0[0-9]|1[0-2]):([0-5][0-9]):([0-5][0-9]))\\s(AM|PM))")) {
@@ -224,7 +224,6 @@ public class JavaTasks {
     //Трудоемкость: Пусть K - количество улиц, S - среднее количество домов на каждой улице, P - среднее количество жителей в каждом доме.
     //Тогда средняя трудоемкость заполнения структур данных будет равна N(log(K/2) + log(S/2) + log(P/2)).
     //Трудоемкость обработки и вывода: N(log(K) + log(S) + log(P)). В краевых случаях трудоемкость N * log(N).
-
     static public void sortAddresses(String inputName, String outputName) throws IOException {
         BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
 
@@ -238,17 +237,18 @@ public class JavaTasks {
                 throw new IllegalArgumentException();
             }
 
-                String[] inpSplit = inp.split("(\\s-\\s)|(\\s(?=\\d+(\\n|$)))"); // [Селезнев Лили][Прудковский][12]
+            String[] inpSplit = inp.split("(\\s-\\s)|(\\s(?=\\d+(\\n|$)))"); // [Селезнев Лили][Прудковский][12]
 
             String name = inpSplit[0];
             String streetName = inpSplit[1];
             Integer streetNumber = Integer.valueOf(inpSplit[2]);
 
             if (entries.containsKey(streetName)) {
-                if (entries.get(streetName).containsKey(streetNumber)) entries.get(streetName).get(streetNumber).add(name);
+                if (entries.get(streetName).containsKey(streetNumber))
+                    entries.get(streetName).get(streetNumber).add(name);
                 else {
-                    TreeSet<String> tempSet = new TreeSet<>();  
-                    tempSet.add(name);      
+                    TreeSet<String> tempSet = new TreeSet<>();
+                    tempSet.add(name);
                     entries.get(streetName).put(streetNumber, tempSet);
                 }
             } else {
@@ -269,8 +269,8 @@ public class JavaTasks {
 
             for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {
 
-                out.write(street.getKey() + " " + building.getKey() + " - ");                  
-                TreeSet<String> names = building.getValue();                                   
+                out.write(street.getKey() + " " + building.getKey() + " - ");
+                TreeSet<String> names = building.getValue();
                 out.write(names.first());
                 if (names.size() > 1) {
                     boolean toWriteCommas = false;
@@ -321,9 +321,9 @@ public class JavaTasks {
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
         BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
 
-        String inp;
+
         int entriesNum = 0;
-        while ((inp = file.readLine()) != null) {
+        while (file.readLine() != null) {
             entriesNum++;
         }
 
@@ -333,6 +333,7 @@ public class JavaTasks {
 
         int[] entries = new int[entriesNum];
         entriesNum = 0;
+        String inp;
         while ((inp = file.readLine()) != null) {
             entries[entriesNum] = ((int) (Double.parseDouble(inp) * 10)) + 2730;
             entriesNum++;

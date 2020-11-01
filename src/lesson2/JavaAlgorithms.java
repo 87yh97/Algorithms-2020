@@ -3,7 +3,6 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 
 @SuppressWarnings("unused")
@@ -103,7 +102,7 @@ public class JavaAlgorithms {
     //Ресурсоемкость: O(N^2)
     //Трудоемкость: O(N^2)
     static public String longestCommonSubstring(String firs, String second) {
-        if (firs == "" || second == "") return "";
+        if (firs.equals("") || second.equals("")) return "";
 
         int firsLen = firs.length();
         int secondLen = second.length();
@@ -159,9 +158,7 @@ public class JavaAlgorithms {
 
         for (int i = 1; i < limit / 2; i++) {
             if (!primes.get(i)) {
-
                 for (int j = 2 * (i + 1) - 1; j < limit && j > 0; j += (i + 1)) {
-
                     primes.set(j, true);
                 }
             }
