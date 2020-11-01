@@ -32,6 +32,7 @@ class TaskTestsJava : AbstractTaskTests() {
     @Test
     @Tag("2")
     fun testMergeArraysJava() {
-        //mergeArrays { first, second -> JavaTasks.mergeArrays(first, second) }
+        //mergeArrays { first, second -> JavaTasks.mergeArrays(first, second) } Здесь идея почему-то подчеркивает second красным,
+        // так как видит в нем несоответствие ожидаемого и реального типа
     }
 }
