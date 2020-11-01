@@ -146,61 +146,7 @@ public class JavaAlgorithms {
      * Единица простым числом не считается.
      */
     static public int calcPrimesNumber(int limit) {
-//        System.out.println("LIMIT: " + limit);
-//        if (limit <= 1) return 0;
-//        ArrayList<Integer> primeNumbers = new ArrayList<>();
-//        int primesNum = limit;
-//        int numToDel = limit;
-//        for (int i = 2; i <= limit / 2; i++) {
-//
-//            boolean isPrime = true;
-//            for (int j : primeNumbers) {
-//                if (i % j == 0) {
-//                    isPrime = false;
-//                    break;
-//                }
-//            }
-//            if (!isPrime) continue;
-//            else primeNumbers.add(i);
-//
-//            primesNum -= (limit / i);
-//            primesNum++;
-//            for (int j = 0; j < primeNumbers.indexOf(i); j++) {
-//                int repeated = i * primeNumbers.get(j);
-//                if (repeated > limit) continue;
-//                primesNum += limit / repeated;
-//                for (int k = j + 1; k < primeNumbers.indexOf(i); k++) {
-//                    int overSummed = repeated * primeNumbers.get(k);
-//                    if (overSummed > limit) continue;
-//                    primesNum -= limit / overSummed;
-//                }
-//
-//            }
-//        }
-//        System.out.println("SIZE: " + primeNumbers.size());
-//        for (int i : primeNumbers) System.out.print(i + ", ");
-//        System.out.println("-----------------------");
-//        return primesNum - 1;
-//    }
-//        if (limit <= 1) return 0;
-//        int primesNum = 0;
-//        BitSet primes = new BitSet(limit + 1);
-//        System.out.println("LIMIT: " + limit);
-//        System.out.println("SIZE: " + primes.size());
-//        //int primesLastInd = primes.size() / 32;
-//        System.out.println("-----------------------");
-//        for (int i = 2; i <= limit / 2; i++) {
-//            if (!primes.get(i)) {
-//                for (int j = 2 * i; j <= limit && j > 0; j += i) {
-//                    //if (j < primes.)
-//                    primes.set(j, true);
-//                    //primesNum--;
-//                }
-//            }
-//        }
-//        for (int i = 2; i <= limit; i++) {
-//            if (!primes.get(i)) primesNum++;
-//        }
+
         if (limit <= 1) return 0;
 
         int primesNum = 0;

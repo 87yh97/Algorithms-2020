@@ -134,6 +134,7 @@ abstract class AbstractBinarySearchTreeTest {
                 binarySet.remove(toRemove),
                 "An element was supposedly not removed from the tree when it should have been."
             )
+            println("Actual set: $binarySet"); //Custom
             assertTrue(
                 toRemove !in binarySet,
                 "The tree contains a supposedly removed element."
@@ -160,6 +161,13 @@ abstract class AbstractBinarySearchTreeTest {
                     "The tree doesn't have the element $element from the control set."
                 )
             }
+            for (element in binarySet) { //Custom
+                assertTrue(
+                    controlSet.contains(element),
+                    "The control set doesn't have the element $element from the tree."
+                )
+            }
+
             println("All clear!")
         }
     }

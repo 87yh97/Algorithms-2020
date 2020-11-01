@@ -322,13 +322,9 @@ public class JavaTasks {
         int entriesNum = 0;
         boolean isEmpty = true;
         while ((inp = file.readLine()) != null) {
-            //isEmpty = false;
-//            if (!inp.matches("(-((27[0-3]\\.[0-9])|(2[0-6][0-9]\\.[0-9])|(1?[0-9]?[0-9]\\.[0-9])))|((500\\.0)|([0-4]?[0-9]?[0-9]\\.[0-9]))")) {
-//                throw new IllegalArgumentException();
-//            }
             entriesNum++;
         }
-       // if (isEmpty) throw new IllegalArgumentException();
+
         file.close();
 
         file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
@@ -350,7 +346,7 @@ public class JavaTasks {
             out.write(String.valueOf((entries[i] - 2730) / 10.0));
             out.newLine();
         }
-        System.out.println("!!!!!!!!!!!!!!SIZE: " + entries.length);
+
         out.close();
     }
 
