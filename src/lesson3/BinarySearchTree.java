@@ -297,7 +297,90 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     @NotNull
     @Override
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        // TODO
+//        return new SubSet<T>(fromElement, toElement);
+//    }
+//
+//    private final class SubSet<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
+//        final T fromElement;
+//        final T toElement;
+//        private int size = 0;
+//
+//        SubSet(T fromElement, T toElement) {
+//            if (fromElement == null || toElement == null || fromElement.compareTo(toElement) > 0 ) {
+//                throw new IllegalArgumentException();
+//            }
+//            this.fromElement = fromElement;
+//            this.toElement = toElement;
+//        }
+//
+//        public boolean contains(Object o) {
+//            @SuppressWarnings("unchecked")
+//            T t = (T) o;
+//            Node<T> closest = find();
+//            return closest != null && t.compareTo(closest.value) == 0;
+//        }
+//
+//        public boolean add(T t) {
+//            return true;
+//        }
+//
+//        public boolean remove(Object o) {
+//            return true;
+//        }
+//
+//        @Override
+//        public Iterator<T> iterator() {
+//            return null;
+//        }
+//
+//        @Override
+//        public int size() {
+//            return size;
+//        }
+//
+//        @Override
+//        public boolean checkInvariant() {
+//            return false;
+//        }
+//
+//        @Override
+//        public int height() {
+//            return 0;
+//        }
+//
+//        @Nullable
+//        @Override
+//        public Comparator<? super T> comparator() {
+//            return null;
+//        }
+//
+//        @NotNull
+//        @Override
+//        public SortedSet<T> subSet(T fromElement, T toElement) {
+//            return null;
+//        }
+//
+//        @NotNull
+//        @Override
+//        public SortedSet<T> headSet(T toElement) {
+//            return null;
+//        }
+//
+//        @NotNull
+//        @Override
+//        public SortedSet<T> tailSet(T fromElement) {
+//            return null;
+//        }
+//
+//        @Override
+//        public T first() {
+//            return null;
+//        }
+//
+//        @Override
+//        public T last() {
+//            return null;
+//        }
         throw new NotImplementedError();
     }
 
