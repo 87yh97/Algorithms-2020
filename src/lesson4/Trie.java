@@ -1,7 +1,7 @@
 package lesson4;
 
 import java.util.*;
-import kotlin.NotImplementedError;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,11 +99,8 @@ public class Trie extends AbstractSet<String> implements Set<String> {
         private int index = 0;
         private final int initialSize = size;
         private final ArrayList<Integer> iterIndexes = new ArrayList<>();
-        //private final ArrayList<Integer> initialMaxIterIndexes = new ArrayList<>();
         private boolean wasRemoved = true;
-        private String lastValue;
         private Node zeroNode;
-
 
         @Override
         public boolean hasNext() {
@@ -112,13 +109,15 @@ public class Trie extends AbstractSet<String> implements Set<String> {
 
         @Override
         public String next() {
-
             if(!hasNext()) throw new NoSuchElementException();
-            lastValue = layerIterator(root, "", (char) 0, 0);
             index++;
             wasRemoved = false;
-            //System.out.println(lastValue);
-            return lastValue;
+            return layerIterator(root, "", (char) 0, 0);
+        }
+
+        private void moveToNextChar(int layerIndex) {
+            iterIndexes.set(layerIndex - 1, iterIndexes.get(layerIndex - 1) + 1);
+            iterIndexes.set(layerIndex, 0);
         }
 
         private String layerIterator (Node node, String word, char thisNodeChar, int layerIndex) {
@@ -127,19 +126,14 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             Set<Character> childrenKeys = node.children.keySet();
 
             if (node != root && thisNodeChar == (char) 0) {
-                iterIndexes.set(layerIndex - 1, iterIndexes.get(layerIndex - 1) + 1);
-                iterIndexes.set(layerIndex, 0);
+                moveToNextChar(layerIndex);
                 return word;
             }
 
-
             if (childrenKeys.isEmpty()) {
-                iterIndexes.set(layerIndex - 1, iterIndexes.get(layerIndex - 1) + 1);
-                iterIndexes.set(layerIndex, 0);
+                moveToNextChar(layerIndex);
                 return layerIterator(root, "", (char) 0, 0);
             }
-
-
 
             int index = 0;
             for (char character : childrenKeys) {
@@ -155,9 +149,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
                 else
                     return layerIterator(node.children.get(character), word + thisNodeChar, character, layerIndex + 1);
             }
-            iterIndexes.set(layerIndex - 1, iterIndexes.get(layerIndex - 1) + 1);//Нет проверки существования элемента, так как до инкремента
-            //элемента iterIndexes[-1] не дойдет из-за проверки hasNext()
-            iterIndexes.set(layerIndex, 0);
+            moveToNextChar(layerIndex);
 
             return layerIterator(root, "", (char) 0, 0);
         }
@@ -165,7 +157,6 @@ public class Trie extends AbstractSet<String> implements Set<String> {
         @Override
         public void remove() {
             if (wasRemoved) throw new IllegalStateException();
-            //Trie.this.remove(lastValue);
             zeroNode.children.remove((char) 0);
             size--;
             wasRemoved = true;
@@ -176,5 +167,4 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             }
         }
     }
-
 }
