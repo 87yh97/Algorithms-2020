@@ -88,7 +88,11 @@ public class Trie extends AbstractSet<String> implements Set<String> {
      * Спецификация: {@link Iterator} (Ctrl+Click по Iterator)
      *
      * Сложная
+     *
      */
+    //Трудоемкость нахождения слова O(K) где К - среднее число букв в слове,
+    //значит общая трудоемкость итерации по всему дереву равна O(N*K) = O(N)
+    //Ресурсоемкость - O(N)
     @NotNull
     @Override
     public Iterator<String> iterator() {
@@ -154,6 +158,7 @@ public class Trie extends AbstractSet<String> implements Set<String> {
             return layerIterator(root, "", (char) 0, 0);
         }
 
+        //Трудоемкость: O(1)
         @Override
         public void remove() {
             if (wasRemoved) throw new IllegalStateException();

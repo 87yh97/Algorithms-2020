@@ -108,7 +108,19 @@ abstract class AbstractTrieTest {
             assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
                 trieIter.next()
             }
+
+            trieSet.add("test_str") //Custom
+            val iterator3 = trieSet.iterator()
+            while(iterator3.hasNext()) {
+                if(iterator3.next() == "test_str") iterator3.remove()
+            }
+            assertFalse(
+                trieSet.contains("test_str"),
+                "test_str was not deleted"
+            )
+
             println("All clear!")
+
         }
     }
 
@@ -169,6 +181,21 @@ abstract class AbstractTrieTest {
                     "Trie set has the element $element that is not in control set."
                 )
             }
+
+            trieSet.add("test_str") //Custom
+            var wasDeleted = false
+            val iterator3 = trieSet.iterator()
+            while(iterator3.hasNext()) {
+                if(iterator3.next() == "test_str") {
+                    assertFalse(
+                        wasDeleted,
+                        "test_str should have been deleted"
+                    )
+                    wasDeleted = true
+                    iterator3.remove()
+                }
+            }
+
             println("All clear!")
         }
     }
