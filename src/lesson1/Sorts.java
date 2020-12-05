@@ -141,4 +141,20 @@ public class Sorts {
         }
         return out;
     }
+
+    public static Integer[] countingSort(Integer[] elements, Integer limit) {
+        Integer[] count = new Integer[limit + 1];
+        for (Integer element: elements) {
+            count[element]++;
+        }
+        for (int j = 1; j <= limit; j++) {
+            count[j] += count[j - 1];
+        }
+        Integer[] out = new Integer[elements.length];
+        for (int j = elements.length - 1; j >= 0; j--) {
+            out[count[elements[j]] - 1] = elements[j];
+            count[elements[j]]--;
+        }
+        return out;
+    }
 }

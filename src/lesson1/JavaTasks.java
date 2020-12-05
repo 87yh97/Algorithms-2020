@@ -43,69 +43,75 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    // Ресурсоемкость: (X*N*2 + K) - памяти требуется для отдельной сортировки только AM или PM значений(0<X<1),
-    // тогда как для оставшейся части требуется ((1-X)*N*2 + K). Алгоритм же хранит N изначальных значений в двух массивах am[] и pm[]
+    // Ресурсоемкость: (X*N*2) - памяти требуется для отдельной сортировки только AM или PM значений(0<X<1),
+    // тогда как для оставшейся части требуется ((1-X)*N*2). Алгоритм же хранит N изначальных значений в двух массивах am[] и pm[]
     // в одном экземпляре каждый. Также в алгоритме используются отдельные массивы для сохранения временных значений
     // в 12 am/pm часов, которые могут занимать от 0 до (N-1) значений.
-    // Следовательно ресурсоемкость в лучшем случае равна O(X*N*2 + K + (1-X)*N*2 + K + N) = O(3N + 2K), а в худшем
-    // O(X*N*2 + K + (1-X)*N*2 + K + N + 2*(N-1)) = O(3N + 2K + 2N - 2) = O(5N + 2K -2).
-    // Значит в общем случае ресурсоемкость равна O(N + K)
+    // Следовательно ресурсоемкость в лучшем случае равна O(X*N*2 + (1-X)*N*2 + N) = O(3N), а в худшем
+    // O(X*N*2 + (1-X)*N*2 + N + 2*(N-1)) = O(3N + 2N - 2) = O(5N - 2).
+    // Значит в общем случае ресурсоемкость равна O(N)
     // Трудоемкость: Сортировка подсчетом обладает трудоемкостью O(N + K), все остальные действия алгоритма
     // по преобразованию входных данных и их обработке также работают за O(N)
-    // Значит трудоемкость алгоритма равна O(N + K)
+    // Значит трудоемкость алгоритма равна O(N + K), где К - количество различных возможных значений моментов времени,
+    // передаваемых в качестве аргумента. В данной задаче К = 46800.
     //
     static public void sortTimes(String inputName, String outputName) throws IOException {
 
-        BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
-
-
-        String inp;
         int amLines = 0;
         int pmLines = 0;
-        boolean isEmpty = true;
-        while ((inp = file.readLine()) != null) {
-            isEmpty = false;
-            if (!inp.matches("(((0[0-9]|1[0-2]):([0-5][0-9]):([0-5][0-9]))\\s(AM|PM))")) {
-                throw new IllegalArgumentException();
+
+        try (BufferedReader file =
+                     Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8)) {
+
+            String inp;
+
+            boolean isEmpty = true;
+            while ((inp = file.readLine()) != null) {
+                isEmpty = false;
+                if (!inp.matches("(((0[0-9]|1[0-2]):([0-5][0-9]):([0-5][0-9]))\\s(AM|PM))")) {
+                    throw new IllegalArgumentException();
+                }
+                if (inp.matches(".*(AM)")) {
+                    amLines++;
+                } else {
+                    pmLines++;
+                }
             }
-            if (inp.matches(".*(AM)")) {
-                amLines++;
-            } else {
-                pmLines++;
-            }
+
+            if (isEmpty) throw new IllegalArgumentException();
         }
-
-        if (isEmpty) throw new IllegalArgumentException();
-
-        file.close();
-
-        file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
 
         int[] am = new int[amLines];
         int[] pm = new int[pmLines];
 
         int amInd = 0;
         int pmInd = 0;
-        while ((inp = file.readLine()) != null) {
-            String[] inpSplit = inp.split(":|\\s");
 
-            if (inp.matches(".*(AM)")) {
-                am[amInd] = (Integer.parseInt(inpSplit[0]) * 3600 +
-                        Integer.parseInt(inpSplit[1]) * 60 +
-                        Integer.parseInt(inpSplit[2]));
-                amInd++;
-            } else {
-                pm[pmInd] = (Integer.parseInt(inpSplit[0]) * 3600 +
-                        Integer.parseInt(inpSplit[1]) * 60 +
-                        Integer.parseInt(inpSplit[2]));
-                pmInd++;
+        try (BufferedReader file =
+                     Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8)) {
+
+            String inp;
+
+            while ((inp = file.readLine()) != null) {
+                String[] inpSplit = inp.split(":|\\s");
+
+                if (inp.matches(".*(AM)")) {
+                    am[amInd] = (Integer.parseInt(inpSplit[0]) * 3600 +
+                            Integer.parseInt(inpSplit[1]) * 60 +
+                            Integer.parseInt(inpSplit[2]));
+                    amInd++;
+                } else {
+                    pm[pmInd] = (Integer.parseInt(inpSplit[0]) * 3600 +
+                            Integer.parseInt(inpSplit[1]) * 60 +
+                            Integer.parseInt(inpSplit[2]));
+                    pmInd++;
+                }
             }
+
+            am = Sorts.countingSort(am, 46800);
+            pm = Sorts.countingSort(pm, 46800);
+
         }
-
-        am = Sorts.countingSort(am, 46800);
-        pm = Sorts.countingSort(pm, 46800);
-
-        file.close();
 
         amInd = 0;
         pmInd = 0;
@@ -142,41 +148,40 @@ public class JavaTasks {
             System.arraycopy(pmSwap, 0, pm, 0, pm.length - pmInd);
         }
 
-        BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
+        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8)) {
 
-        for (int value : am) {
-            int num = value / 3600;
-            writeZero(num, out);
-            out.write(num + ":");
+            for (int value : am) {
+                int num = value / 3600;
+                writeZero(num, out);
+                out.write(num + ":");
 
-            num = (value / 60) % 60;
-            writeZero(num, out);
-            out.write(num + ":");
+                num = (value / 60) % 60;
+                writeZero(num, out);
+                out.write(num + ":");
 
-            num = value % 60;
-            writeZero(num, out);
-            out.write(num + " AM");
+                num = value % 60;
+                writeZero(num, out);
+                out.write(num + " AM");
 
-            out.newLine();
+                out.newLine();
+            }
+
+            for (int value : pm) {
+                int num = value / 3600;
+                writeZero(num, out);
+                out.write(num + ":");
+
+                num = (value / 60) % 60;
+                writeZero(num, out);
+                out.write(num + ":");
+
+                num = value % 60;
+                writeZero(num, out);
+                out.write(num + " PM");
+
+                out.newLine();
+            }
         }
-
-        for (int value : pm) {
-            int num = value / 3600;
-            writeZero(num, out);
-            out.write(num + ":");
-
-            num = (value / 60) % 60;
-            writeZero(num, out);
-            out.write(num + ":");
-
-            num = value % 60;
-            writeZero(num, out);
-            out.write(num + " PM");
-
-            out.newLine();
-        }
-
-        out.close();
     }
 
     private static void writeZero(int num, BufferedWriter out) throws IOException {
@@ -225,65 +230,64 @@ public class JavaTasks {
     //Тогда средняя трудоемкость заполнения структур данных будет равна N(log(K/2) + log(S/2) + log(P/2)).
     //Трудоемкость обработки и вывода: N(log(K) + log(S) + log(P)). В краевых случаях трудоемкость N * log(N).
     static public void sortAddresses(String inputName, String outputName) throws IOException {
-        BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
-
         String inp;
         TreeMap<String, TreeMap<Integer, TreeSet<String>>> entries = new TreeMap<>();
 
-        boolean isEmpty = true;
-        while ((inp = file.readLine()) != null) {
-            isEmpty = false;
-            if (!inp.matches("(\\S*)\\s(\\S*)\\s-\\s(\\S*)\\s(\\d+)")) {
-                throw new IllegalArgumentException();
-            }
+        try (BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8)) {
 
-            String[] inpSplit = inp.split("(\\s-\\s)|(\\s(?=\\d+(\\n|$)))"); // [Селезнев Лили][Прудковский][12]
+            boolean isEmpty = true;
+            while ((inp = file.readLine()) != null) {
+                isEmpty = false;
+                if (!inp.matches("(\\S*)\\s(\\S*)\\s-\\s(\\S*)\\s(\\d+)")) {
+                    throw new IllegalArgumentException();
+                }
 
-            String name = inpSplit[0];
-            String streetName = inpSplit[1];
-            Integer streetNumber = Integer.valueOf(inpSplit[2]);
+                String[] inpSplit = inp.split("(\\s-\\s)|(\\s(?=\\d+(\\n|$)))"); // [Селезнев Лили][Прудковский][12]
 
-            if (entries.containsKey(streetName)) {
-                if (entries.get(streetName).containsKey(streetNumber))
-                    entries.get(streetName).get(streetNumber).add(name);
-                else {
+                String name = inpSplit[0];
+                String streetName = inpSplit[1];
+                Integer streetNumber = Integer.valueOf(inpSplit[2]);
+
+                if (entries.containsKey(streetName)) {
+                    if (entries.get(streetName).containsKey(streetNumber))
+                        entries.get(streetName).get(streetNumber).add(name);
+                    else {
+                        TreeSet<String> tempSet = new TreeSet<>();
+                        tempSet.add(name);
+                        entries.get(streetName).put(streetNumber, tempSet);
+                    }
+                } else {
                     TreeSet<String> tempSet = new TreeSet<>();
                     tempSet.add(name);
-                    entries.get(streetName).put(streetNumber, tempSet);
+                    TreeMap<Integer, TreeSet<String>> tempMap = new TreeMap<>();
+                    tempMap.put(streetNumber, tempSet);
+                    entries.put(streetName, tempMap);
                 }
-            } else {
-                TreeSet<String> tempSet = new TreeSet<>();
-                tempSet.add(name);
-                TreeMap<Integer, TreeSet<String>> tempMap = new TreeMap<>();
-                tempMap.put(streetNumber, tempSet);
-                entries.put(streetName, tempMap);
             }
+            if (isEmpty) throw new IllegalArgumentException();
+
         }
-        if (isEmpty) throw new IllegalArgumentException();
 
-        file.close();
+        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8)) {
 
-        BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
+            for (Map.Entry<String, TreeMap<Integer, TreeSet<String>>> street : entries.entrySet()) {
 
-        for (Map.Entry<String, TreeMap<Integer, TreeSet<String>>> street : entries.entrySet()) {
+                for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {
 
-            for (Map.Entry<Integer, TreeSet<String>> building : street.getValue().entrySet()) {
-
-                out.write(street.getKey() + " " + building.getKey() + " - ");
-                TreeSet<String> names = building.getValue();
-                out.write(names.first());
-                if (names.size() > 1) {
-                    boolean toWriteCommas = false;
-                    for (String name : names) {
-                        if (toWriteCommas) out.write(", " + name);
-                        else toWriteCommas = true;
+                    out.write(street.getKey() + " " + building.getKey() + " - ");
+                    TreeSet<String> names = building.getValue();
+                    out.write(names.first());
+                    if (names.size() > 1) {
+                        boolean toWriteCommas = false;
+                        for (String name : names) {
+                            if (toWriteCommas) out.write(", " + name);
+                            else toWriteCommas = true;
+                        }
                     }
+                    out.newLine();
                 }
-                out.newLine();
             }
         }
-
-        out.close();
     }
 
     /**
@@ -319,38 +323,30 @@ public class JavaTasks {
     //Трудоемкость: O(N + K) - Обработка данных - O(N), сортировка - O(N + K)
     //Ресурсоемкость: O(N)
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
-        BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
+        ArrayList<Integer> entries = new ArrayList<>();
 
-
-        int entriesNum = 0;
-        while (file.readLine() != null) {
-            entriesNum++;
+        try (BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8))
+        {
+            String inp;
+            while ((inp = file.readLine()) != null) {
+                entries.add(((int) (Double.parseDouble(inp) * 10)) + 2730);
+            }
         }
 
-        file.close();
-
-        file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8);
-
-        int[] entries = new int[entriesNum];
-        entriesNum = 0;
-        String inp;
-        while ((inp = file.readLine()) != null) {
-            entries[entriesNum] = ((int) (Double.parseDouble(inp) * 10)) + 2730;
-            entriesNum++;
+        int[] entriesArr = new int[entries.size()];
+        for (int i = 0; i < entries.size(); i++) {
+            entriesArr[i] = entries.get(i);
         }
 
-        file.close();
+        entriesArr = Sorts.countingSort(entriesArr, 7730);
 
-        entries = Sorts.countingSort(entries, 7730);
+        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8)) {
 
-        BufferedWriter out = Files.newBufferedWriter(Paths.get(System.getProperty("user.dir"), outputName), StandardCharsets.UTF_8);
-
-        for (int i = 0; i < entriesNum; i++) {
-            out.write(String.valueOf((entries[i] - 2730) / 10.0));
-            out.newLine();
+            for (int value : entriesArr) {
+                out.write(String.valueOf((value - 2730) / 10.0));
+                out.newLine();
+            }
         }
-
-        out.close();
     }
 
     /**
