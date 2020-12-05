@@ -53,14 +53,9 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                 sortTimes("input/time_in4.txt", "temp.txt")
             }
         } finally {
-
-        }
-        try { //Custom test
-            sortTimes("input/time_in5.txt", "temp.txt")
-            assertFileContent("temp.txt", File("input/time_out5.txt").readLines())
-        } finally {
             File("temp.txt").delete()
         }
+
         try { //Custom test
             assertThrows(IllegalArgumentException::class.java) {
                 sortTimes("input/time_in6.txt", "temp.txt")
