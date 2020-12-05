@@ -325,8 +325,7 @@ public class JavaTasks {
     static public void sortTemperatures(String inputName, String outputName) throws IOException {
         ArrayList<Integer> entries = new ArrayList<>();
 
-        try (BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8))
-        {
+        try (BufferedReader file = Files.newBufferedReader(Paths.get(System.getProperty("user.dir"), inputName), StandardCharsets.UTF_8)) {
             String inp;
             while ((inp = file.readLine()) != null) {
                 entries.add(((int) (Double.parseDouble(inp) * 10)) + 2730);
