@@ -121,14 +121,7 @@ abstract class AbstractAlgorithmsTests {
             ).trim()
         )
         assertEquals("", longestCommonSubstring("", "")) //Custom
-        assertEquals(
-            " - 黺", //Custom
-            longestCommonSubstring("䶢럏㤖馡 쌐茥ꖯ婲柵귒\u1AE4韙߁ - 黺扩輫炆", "邸נ丞ᘃ惮⌃歓뜨 䏢釹䨯⦴ - 黺\u0B3A♻뱡ⵕ㧠迬䯬宯")
-        )
-        assertEquals(
-            "\u1AE4", //Custom
-            longestCommonSubstring("䶢럏㤖馡쌐茥ꖯ婲柵귒\u1AE4韙߁ -扩輫炆", "邸נ丞ᘃ惮⌃歓뜨 䏢釹䨯⦴- 黺\u1AE4\u1AE4♻뱡ⵕ㧠迬䯬宯")
-        )
+
     }
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
@@ -153,7 +146,6 @@ abstract class AbstractAlgorithmsTests {
         assertEquals(148933, calcPrimesNumber(2000000))
         assertEquals(348513, calcPrimesNumber(5000000))
         assertEquals(664579, calcPrimesNumber(10000000))
-        assertEquals(50847534, calcPrimesNumber(1000000000)) //custom
         //assertEquals(98222287, calcPrimesNumber(2000000000)) //custom
         //assertEquals(105097565, calcPrimesNumber(Integer.MAX_VALUE)) //custom
     }
