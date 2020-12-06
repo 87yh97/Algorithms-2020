@@ -79,64 +79,113 @@ public class JavaDynamicTasks {
 
 
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
-        ArrayList<ArrayList<Integer>> sequenceList = new ArrayList<>();
+//        ArrayList<ArrayList<Integer>> sequenceList = new ArrayList<>();
+//
+//        if (list.size() > 0) {
+//            ArrayList<Integer> temp = new ArrayList<>();
+//            temp.add(list.get(0));
+//            sequenceList.add(temp);
+//        } else {
+//            return new ArrayList<>();
+//        }
+//
+//
+//        for (Integer newNum : list) {
+//            int sequenceListSize = sequenceList.size();
+//            nextSequence: for (int i = 0; i < sequenceListSize; i++) {
+//
+//                ArrayList<Integer> subList = sequenceList.get(i);
+//
+//                if (newNum > subList.get(subList.size() - 1)) subList.add(newNum);
+//                else {
+//                    for (Integer subNum : subList) {
+//                        if (newNum < subNum) {
+//                            ArrayList<Integer> temp = new ArrayList<>(subList.subList(0, subList.indexOf(subNum)));
+//                            temp.add(newNum);
+//                            for (ArrayList<Integer> firstInstance : sequenceList) {
+//                                if (firstInstance.size() == temp.size()) {
+//                                    for (int j = 0; j < firstInstance.size(); j++) {
+//                                        if (!firstInstance.get(j).equals(subList.get(j))) continue nextSequence;
+//                                    }
+//                                }
+//                            }
+//                            sequenceList.add(temp);
+//                            continue nextSequence;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        int maxSize = 0;
+//        ArrayList<Integer> longestSequence = new ArrayList<>();
+//        for (ArrayList<Integer> subList : sequenceList) {
+//            if (subList.size() > maxSize) {
+//                longestSequence = subList;
+//                maxSize = subList.size();
+//            } else if (subList.size() == maxSize) {
+//                for (int i = 0; i < maxSize; i++) {
+//                    if (list.indexOf(subList.get(i)) < list.indexOf(longestSequence.get(i))) longestSequence = subList;
+//                    else if (list.indexOf(subList.get(i)) > list.indexOf(longestSequence.get(i))) break;
+//                }
+//            }
+//        }
+//
+//        return longestSequence;
 
-        if (list.size() > 0) {
-            ArrayList<Integer> temp = new ArrayList<>();
-            temp.add(list.get(0));
-            sequenceList.add(temp);
-        } else {
-            return new ArrayList<>();
+        int size = list.size();
+
+        ArrayList<Integer> reversed = new ArrayList<>();
+
+        for (int i = size - 1; i >= 0; i++) {
+            reversed.add(list.get(i));
         }
 
+        int[] end = new int[size + 1];
+//        for (int i = 0; i < size + 1; i++) {
+////            end[i] = Integer.MAX_VALUE;
+////        }
+        //int[] endInd = new int[size];
+        int[] prevSeqEnd = new int[size];
 
-        for (Integer newNum : list) {
-            int sequenceListSize = sequenceList.size();
-            nextSequence: for (int i = 0; i < sequenceListSize; i++) {
+        int seqSize = 0;
 
-                ArrayList<Integer> subList = sequenceList.get(i);
+//        if (size > 0) {
+//            seqSize = 1;
+//            end[0] = list.get(0);
+//        } else {
+//            return new ArrayList<>();
+//        }
 
-                if (newNum > subList.get(subList.size() - 1)) subList.add(newNum);
-                else {
-                    for (Integer subNum : subList) {
-                        if (newNum < subNum) {
-                            ArrayList<Integer> temp = new ArrayList<>(subList.subList(0, subList.indexOf(subNum)));
-                            temp.add(newNum);
-                            for (ArrayList<Integer> firstInstance : sequenceList) {
-                                if (firstInstance.size() == temp.size()) {
-                                    for (int j = 0; j < firstInstance.size(); j++) {
-                                        if (!firstInstance.get(j).equals(subList.get(j))) continue nextSequence;
-                                    }
-                                }
-                            }
-                            sequenceList.add(temp);
-                            continue nextSequence;
-                        }
-                    }
-                }
+        for (int i = 0; i < size; i++) {
+            int newNum = list.get(i);
+            int upperBorder = seqSize + 1;
+            int lowerBorder = 1; //0
+
+            while (lowerBorder < upperBorder) {
+                int middle = (lowerBorder + upperBorder) / 2;
+                if (list.get(end[middle]) < newNum) lowerBorder = middle + 1;
+                else upperBorder = middle;
             }
-        }
 
-        int maxSize = 0;
-        ArrayList<Integer> longestSequence = new ArrayList<>();
-        for (ArrayList<Integer> subList : sequenceList) {
-            if (subList.size() > maxSize) {
-                longestSequence = subList;
-                maxSize = subList.size();
-            } else if (subList.size() == maxSize) {
-                for (int i = 0; i < maxSize; i++) {
-                    if (list.indexOf(subList.get(i)) < list.indexOf(longestSequence.get(i))) longestSequence = subList;
-                    else if (list.indexOf(subList.get(i)) > list.indexOf(longestSequence.get(i))) break;
-                }
+
+
+            if (lowerBorder /*+ 1*/ > seqSize) {
+                seqSize = lowerBorder /*+ 1*/;
             }
-        }
+            if (i > 0) prevSeqEnd[i] = end[lowerBorder - 1];
+            end[lowerBorder] = list.indexOf(newNum);
 
-        return longestSequence;
+        }
+        ArrayList<Integer> sequence = new ArrayList<>();
+        int k = end[seqSize];
+        for (int i = seqSize - 1; i >= 0; i--) {
+            sequence.add(0, list.get(k));
+            k = prevSeqEnd[k];
+        }
+        return sequence;
     }
 
-//    public static List<Integer> atomicSubSequence(List<Integer> list) {
-//
-//    }
 
     /**
      * Самый короткий маршрут на прямоугольном поле.
