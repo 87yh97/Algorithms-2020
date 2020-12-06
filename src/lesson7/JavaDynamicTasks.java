@@ -76,6 +76,8 @@ public class JavaDynamicTasks {
      * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
      */
+
+
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
         ArrayList<ArrayList<Integer>> sequenceList = new ArrayList<>();
 
@@ -87,96 +89,37 @@ public class JavaDynamicTasks {
             return new ArrayList<>();
         }
 
-//        for (Integer newNum : list) {
-//            nextSequence: for (int i = 0; i < sequenceList.size(); i++) {
-//                ArrayList<Integer> subList = sequenceList.get(i);
-//                if (newNum > subList.get(subList.size() - 1)) {
-//                    ArrayList<Integer> temp = new ArrayList<>(subList);
-//                    temp.add(newNum);
-//                    sequenceList.add(temp);
-//                } else if (newNum < subList.get(subList.size() - 1)) {
-//                    if (subList.size() > 1) {
-//                        //subList.set(subList.size() - 1, newNum);
-//                        ArrayList<Integer> temp = new ArrayList<>(subList);
-//                        temp.set(subList.size() - 1, newNum);
-//                        sequenceList.add(temp);
-//                    } else {
-//                        ArrayList<Integer> temp = new ArrayList<>();
-//                        temp.add(newNum);
-//                        sequenceList.add(temp);
-//                    }
-//                }
-//
-//                for (Integer subNum : subList) {
-//                    if (newNum < subNum) {
-//                        ArrayList<Integer> temp = new ArrayList<>(subList.subList(0, subList.indexOf(subNum)));
-//                        temp.add(newNum);
-//
-//                        stopChecking: for (ArrayList<Integer> firstInstance : sequenceList) {
-//                            if (firstInstance.size() == temp.size()) {
-//                                for (int j = 0; j < firstInstance.size(); j++) {
-//                                    if (!firstInstance.get(j).equals(subList.get(j))) break stopChecking;
-//                                }
-//                                break nextSequence;
-//                            }
-//                        }
-//
-//                        sequenceList.add(temp);
-//                    }
-//                }
-//            }
-//        }
+
         for (Integer newNum : list) {
             int sequenceListSize = sequenceList.size();
             nextSequence: for (int i = 0; i < sequenceListSize; i++) {
-                ArrayList<Integer> subList = sequenceList.get(i);
-                if (newNum > subList.get(subList.size() - 1)) {
-//                    ArrayList<Integer> temp = new ArrayList<>(subList);
-//                    temp.add(newNum);
-//                    sequenceList.add(temp);
-                    subList.add(newNum);
-                } else {
-//                else if (newNum < subList.get(subList.size() - 1)) {
-//                    if (subList.size() > 1) {
-//                        //subList.set(subList.size() - 1, newNum);
-//                        ArrayList<Integer> temp = new ArrayList<>(subList);
-//                        temp.set(subList.size() - 1, newNum);
-//                        sequenceList.add(temp);
-//                    } else {
-//                        ArrayList<Integer> temp = new ArrayList<>();
-//                        temp.add(newNum);
-//                        sequenceList.add(temp);
-//                    }
-//                }
 
+                ArrayList<Integer> subList = sequenceList.get(i);
+
+                if (newNum > subList.get(subList.size() - 1)) subList.add(newNum);
+                else {
                     for (Integer subNum : subList) {
                         if (newNum < subNum) {
                             ArrayList<Integer> temp = new ArrayList<>(subList.subList(0, subList.indexOf(subNum)));
                             temp.add(newNum);
-
-//                        stopChecking: for (ArrayList<Integer> firstInstance : sequenceList) {
-//                            if (firstInstance.size() == temp.size()) {
-//                                for (int j = 0; j < firstInstance.size(); j++) {
-//                                    if (!firstInstance.get(j).equals(subList.get(j))) break stopChecking;
-//                                }
-//                                break nextSequence;
-//                            }
-//                        }
-
+                            for (ArrayList<Integer> firstInstance : sequenceList) {
+                                if (firstInstance.size() == temp.size()) {
+                                    for (int j = 0; j < firstInstance.size(); j++) {
+                                        if (!firstInstance.get(j).equals(subList.get(j))) continue nextSequence;
+                                    }
+                                }
+                            }
                             sequenceList.add(temp);
-                            break;
+                            continue nextSequence;
                         }
                     }
                 }
             }
         }
 
-        //for ()
-
         int maxSize = 0;
         ArrayList<Integer> longestSequence = new ArrayList<>();
         for (ArrayList<Integer> subList : sequenceList) {
-            System.out.println(subList);
             if (subList.size() > maxSize) {
                 longestSequence = subList;
                 maxSize = subList.size();
@@ -187,7 +130,7 @@ public class JavaDynamicTasks {
                 }
             }
         }
-        System.out.println("=================================================");
+
         return longestSequence;
     }
 
