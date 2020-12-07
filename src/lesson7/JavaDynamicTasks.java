@@ -76,63 +76,13 @@ public class JavaDynamicTasks {
      * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
      */
-
+    //Трудоемкость: O(N*log(N))
+    //Ресурсоемкость: O(N)
 
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
-//        ArrayList<ArrayList<Integer>> sequenceList = new ArrayList<>();
-//
-//        if (list.size() > 0) {
-//            ArrayList<Integer> temp = new ArrayList<>();
-//            temp.add(list.get(0));
-//            sequenceList.add(temp);
-//        } else {
-//            return new ArrayList<>();
-//        }
-//
-//
-//        for (Integer newNum : list) {
-//            int sequenceListSize = sequenceList.size();
-//            nextSequence: for (int i = 0; i < sequenceListSize; i++) {
-//
-//                ArrayList<Integer> subList = sequenceList.get(i);
-//
-//                if (newNum > subList.get(subList.size() - 1)) subList.add(newNum);
-//                else {
-//                    for (Integer subNum : subList) {
-//                        if (newNum < subNum) {
-//                            ArrayList<Integer> temp = new ArrayList<>(subList.subList(0, subList.indexOf(subNum)));
-//                            temp.add(newNum);
-//                            for (ArrayList<Integer> firstInstance : sequenceList) {
-//                                if (firstInstance.size() == temp.size()) {
-//                                    for (int j = 0; j < firstInstance.size(); j++) {
-//                                        if (!firstInstance.get(j).equals(subList.get(j))) continue nextSequence;
-//                                    }
-//                                }
-//                            }
-//                            sequenceList.add(temp);
-//                            continue nextSequence;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        int maxSize = 0;
-//        ArrayList<Integer> longestSequence = new ArrayList<>();
-//        for (ArrayList<Integer> subList : sequenceList) {
-//            if (subList.size() > maxSize) {
-//                longestSequence = subList;
-//                maxSize = subList.size();
-//            } else if (subList.size() == maxSize) {
-//                for (int i = 0; i < maxSize; i++) {
-//                    if (list.indexOf(subList.get(i)) < list.indexOf(longestSequence.get(i))) longestSequence = subList;
-//                    else if (list.indexOf(subList.get(i)) > list.indexOf(longestSequence.get(i))) break;
-//                }
-//            }
-//        }
-//
-//        return longestSequence;
-
+        for (int i = 50; i >= 0; i--) {
+            System.out.print(i + ", ");
+        }
         int size = list.size();
 
         ArrayList<Integer> reversed = new ArrayList<>();
@@ -140,27 +90,16 @@ public class JavaDynamicTasks {
         for (int i = size - 1; i >= 0; i--) {
             reversed.add(list.get(i));
         }
-
         int[] end = new int[size + 1];
-//        for (int i = 0; i < size + 1; i++) {
-////            end[i] = Integer.MAX_VALUE;
-////        }
-        //int[] endInd = new int[size];
         int[] prevSeqEnd = new int[size];
 
         int seqSize = 0;
 
-//        if (size > 0) {
-//            seqSize = 1;
-//            end[0] = list.get(0);
-//        } else {
-//            return new ArrayList<>();
-//        }
 
         for (int i = 0; i < size; i++) {
             int newNum = reversed.get(i);
             int upperBorder = seqSize + 1;
-            int lowerBorder = 1; //0
+            int lowerBorder = 1;
 
             while (lowerBorder < upperBorder) {
                 int middle = (lowerBorder + upperBorder) / 2;
@@ -168,10 +107,8 @@ public class JavaDynamicTasks {
                 else upperBorder = middle;
             }
 
-
-
-            if (lowerBorder /*+ 1*/ > seqSize) {
-                seqSize = lowerBorder /*+ 1*/;
+            if (lowerBorder > seqSize) {
+                seqSize = lowerBorder;
             }
             if (i > 0) prevSeqEnd[i] = end[lowerBorder - 1];
             end[lowerBorder] = reversed.indexOf(newNum);
