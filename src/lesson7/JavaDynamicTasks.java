@@ -137,7 +137,7 @@ public class JavaDynamicTasks {
 
         ArrayList<Integer> reversed = new ArrayList<>();
 
-        for (int i = size - 1; i >= 0; i++) {
+        for (int i = size - 1; i >= 0; i--) {
             reversed.add(list.get(i));
         }
 
@@ -158,13 +158,13 @@ public class JavaDynamicTasks {
 //        }
 
         for (int i = 0; i < size; i++) {
-            int newNum = list.get(i);
+            int newNum = reversed.get(i);
             int upperBorder = seqSize + 1;
             int lowerBorder = 1; //0
 
             while (lowerBorder < upperBorder) {
                 int middle = (lowerBorder + upperBorder) / 2;
-                if (list.get(end[middle]) < newNum) lowerBorder = middle + 1;
+                if (reversed.get(end[middle]) > newNum) lowerBorder = middle + 1;
                 else upperBorder = middle;
             }
 
@@ -174,16 +174,20 @@ public class JavaDynamicTasks {
                 seqSize = lowerBorder /*+ 1*/;
             }
             if (i > 0) prevSeqEnd[i] = end[lowerBorder - 1];
-            end[lowerBorder] = list.indexOf(newNum);
+            end[lowerBorder] = reversed.indexOf(newNum);
 
         }
         ArrayList<Integer> sequence = new ArrayList<>();
         int k = end[seqSize];
         for (int i = seqSize - 1; i >= 0; i--) {
-            sequence.add(0, list.get(k));
+            sequence.add(0, reversed.get(k));
             k = prevSeqEnd[k];
         }
-        return sequence;
+        ArrayList<Integer> reversedSequence = new ArrayList<>();
+        for (int i = seqSize - 1; i >= 0; i--) {
+            reversedSequence.add(sequence.get(i));
+        }
+        return reversedSequence;
     }
 
 
