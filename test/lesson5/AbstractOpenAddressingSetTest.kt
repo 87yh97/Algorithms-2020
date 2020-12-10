@@ -118,6 +118,8 @@ abstract class AbstractOpenAddressingSetTest {
                 openAddressingSetIter.next()
             }
             println("All clear!")
+
+            //Созданные тесты рандомные и проверяют всю функциональность, мне нечего добавить...
         }
     }
 
@@ -175,6 +177,17 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
             println("All clear!")
+
+            val openAddressingSet2 = create<String>(random.nextInt(6) + 4)//Custom
+            val iterator2 = openAddressingSet2.iterator()
+            while (iterator2.hasNext()) {
+                iterator2.next()
+                iterator2.remove()
+            }
+            assertTrue(
+                openAddressingSet2.size == 0,
+                "Some elements remained in the empty set"
+            )
         }
     }
 }
