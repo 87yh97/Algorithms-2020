@@ -13,6 +13,8 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 
     private final int capacity;
 
+    private final Object wasDeleted = new Object();
+
     private final Object[] storage;
 
     private int size = 0;
@@ -67,7 +69,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int startingIndex = startingIndex(t);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
+        while (current != null && current != wasDeleted) {
             if (current.equals(t)) {
                 return false;
             }
@@ -125,13 +127,14 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         @Override
         public boolean hasNext() {
             while (index < capacity) {
-                if (storage[index] == null) index++;
+                if (storage[index] == null || storage[index] == wasDeleted) index++;
                 else return true;
             }
             return false;
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public T next() {
             if (!hasNext()) throw new NoSuchElementException();
 //                if (storage[index] != null) return (T) storage[index];
@@ -142,7 +145,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
             lastReturnedElement = (T) storage[lastReturnedElementIndex];
             index++;
             wasRemoved = false;
-            return lastReturnedElement; //?????????????
+            return (T) storage[lastReturnedElementIndex]; //?????????????
         }
 
         @Override
@@ -162,21 +165,23 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 //                storage[index % capacity] = storage[(index + 1) % capacity];
 //                index++;
 //            }
-            int index = lastReturnedElementIndex + 1;
-            int lastReplaced = lastReturnedElementIndex;
-            int elStartingIndex = startingIndex(lastReturnedElement);
-            while (index < (capacity - 1) + elStartingIndex
-                    //&& (index + 1) % capacity != elStartingIndex
-                    && storage[index % capacity] != null) {
-                if (startingIndex(storage[(index + 1) % capacity]) != elStartingIndex) {
-
-                }
-                storage[index % capacity] = storage[(index + 1) % capacity];
-                index++;
-            }
-            storage[index % capacity] = null;
+//            int index = lastReturnedElementIndex + 1;
+//            int toReplace = lastReturnedElementIndex;
+//            int elStartingIndex = startingIndex(lastReturnedElement);
+//            while (index < (capacity) + elStartingIndex
+//                    //&& (index + 1) % capacity != elStartingIndex
+//                    /*&& storage[index % capacity] != null*/) {
+//                if (storage[index % capacity] != null && startingIndex(storage[(index) % capacity]) >= elStartingIndex) {
+//                    storage[toReplace] = storage[(index) % capacity];
+//                    toReplace = index % capacity;
+//                    index++;
+//                } else {
+//                    index++;
+//                }
+//            }
+            storage[lastReturnedElementIndex] = wasDeleted;
             //storage[size - 1] = null;
-            this.index--;
+            //this.index--;
             wasRemoved = true;
             size--;
         }
