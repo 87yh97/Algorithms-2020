@@ -1,10 +1,10 @@
 package lesson5;
 
-import kotlin.NotImplementedError;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class OpenAddressingSet<T> extends AbstractSet<T> {
@@ -107,11 +107,79 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      * Спецификация: {@link Iterator} (Ctrl+Click по Iterator)
      *
      * Средняя (сложная, если поддержан и remove тоже)
+     * @return
      */
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+       return new OpenAddressingSetIterator();
+    }
+
+    private class OpenAddressingSetIterator implements Iterator<T> {
+
+        int index = 0;
+        int lastReturnedElementIndex = 0;
+        T lastReturnedElement = null;
+        boolean wasRemoved = true;
+
+        @Override
+        public boolean hasNext() {
+            while (index < capacity) {
+                if (storage[index] == null) index++;
+                else return true;
+            }
+            return false;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) throw new NoSuchElementException();
+//                if (storage[index] != null) return (T) storage[index];
+//                else {
+//                    while (hasNext())
+//                }
+            lastReturnedElementIndex = index;
+            lastReturnedElement = (T) storage[lastReturnedElementIndex];
+            index++;
+            wasRemoved = false;
+            return lastReturnedElement; //?????????????
+        }
+
+        @Override
+        public void remove() {
+            if (wasRemoved) throw new IllegalStateException();
+            //storage[lastReturnedElementIndex] = null;
+//            for (int i = lastReturnedElementIndex; i < (size - 1); i++) {
+//                 storage[i] = storage[i + 1];
+//            }
+
+//            int index = lastReturnedElementIndex;
+//            int elStartingIndex = startingIndex(lastReturnedElement);
+//            while (index < (capacity - 1) + elStartingIndex
+//                    && (index + 1) % capacity != elStartingIndex
+//                    && storage[(index + 1) % capacity] != null
+//                    && startingIndex(storage[(index + 1) % capacity]) >= elStartingIndex) {
+//                storage[index % capacity] = storage[(index + 1) % capacity];
+//                index++;
+//            }
+            int index = lastReturnedElementIndex + 1;
+            int lastReplaced = lastReturnedElementIndex;
+            int elStartingIndex = startingIndex(lastReturnedElement);
+            while (index < (capacity - 1) + elStartingIndex
+                    //&& (index + 1) % capacity != elStartingIndex
+                    && storage[index % capacity] != null) {
+                if (startingIndex(storage[(index + 1) % capacity]) != elStartingIndex) {
+
+                }
+                storage[index % capacity] = storage[(index + 1) % capacity];
+                index++;
+            }
+            storage[index % capacity] = null;
+            //storage[size - 1] = null;
+            this.index--;
+            wasRemoved = true;
+            size--;
+        }
+
     }
 }
